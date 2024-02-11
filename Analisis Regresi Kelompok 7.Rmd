@@ -1,0 +1,227 @@
+---
+title: "Tugas Kelompok Anreg"
+author: Salsabila Fayiza_G1401221036 Delia Fitri Audina_G1401221013 Muhammad Abdan
+  Rofi_G1401221059
+date: "2024-02-07"
+output:
+  html_document: default
+  word_document: default
+---
+
+```{r}
+library(readxl)
+data <- read.csv("D:/IPB/SEMESTER 4/Analisis Regresi/Pertemuan 3/Tukel/data harga mobil.csv")
+y<-data$price
+x1<-data$horsepower
+
+data<-data.frame(cbind(y,x1))
+head(data)
+```
+
+```{r}
+n <- nrow(data)
+n
+```
+
+PEMBENTUKAN MODEL TANPA FUNGSI BAWAAN (MANUAL) 
+#Parameter regresi
+
+```{r}
+b1<-(sum(x1*y)-sum(x1)*sum(y)/n)/(sum(x1^2)-(sum(x1)^2/n))
+b0<-mean(y)-b1*mean(x1)
+
+b1
+b0
+```
+
+INTERPRETASI B1 Nilai slope (b1) yang diperoleh sebesar 172.3164 ini menunjukkan bahwa terdapat hubungan positif antara harga mobil (y) dan kecepatan kuda (x).Ini menunjukkan bahwa untuk setiap peningkatan satu satuan kecepatan kuda (x), maka harga mobil (y) meningkat sebesar 172.3164.
+
+INTERPRETASI B0 Nilai intersep B0 yang diperoleh sebesar -4573.358 ini menunjukkan bahwa ketika kecepatan kuda (x) adalah 0, maka harga mobil (y) tidak akan bernilai -4573.358.
+
+UKURAN KERAGAMAN 
+##jumlah kuadrat
+
+```{r}
+galat <- y-(b0+b1*x1)
+JKG <- sum((y - (b0+b1*x1))^2)
+JKG
+```
+
+```{r}
+JKReg <- sum(((b0+b1*x1)- mean(y))^2)
+JKReg
+```
+
+```{r}
+JKT <- sum((y - mean(y))^2)
+JKT
+```
+
+##Derajat bebas
+
+```{r}
+dbReg <- 1
+dbReg
+```
+
+```{r}
+dbg <- n-2
+dbg
+```
+
+```{r}
+dbt <- n-1
+dbt
+```
+
+```{r}
+Fhit <- (JKReg/dbReg)/(JKG/dbg)
+Fhit
+```
+
+PERSAMAAN REGRESI LINEAR SEDERHANA
+
+```{r}
+model <- lm(y~x1, data)
+summary(model)
+```
+
+INTERPRETASI PERSAMAAN REGRESI Berdasarkan perhitungan, diperoleh dugaan persamaan regresi linear Y_duga = -4573.358 + 172.3164x.Dapat disimpulkan bahwa semakin tinggi kecepaatan, maka semakin besar kemungkinian harga mobilnya semakin meningkat sebesar 172.3164.
+
+Scatter Plot
+
+```{r}
+y.bar <- mean(y)
+plot(x1,y)
+abline(model, col="red")
+text(200, 29000, "Y_duga", adj =c(-0.1, 1.5), col = "red", cex = 0.8)
+abline(h=y.bar, col = "blue")
+text(30000, 95, "Y_bar", adj = c(0.1, 1.5), col = "blue", cex = 0.8)
+```
+
+INTERPRETASI SCATTER PLOT
+Garis biru menunjukkan rataan harga mobil dan garis merah menunjukkan garis persamaan linear sederhana yang bernilai positif karna garis menjulur dari kiri atas ke kanan bawah
+
+```{r}
+anova.model <- anova(model)
+anova.model
+```
+
+```{r}
+(KTG <- anova.model$'Mean Sq'[2])
+```
+Setelah perhitungan anova, diperoleh nilai JKR = 8295483837, JKG = 4313966375, JKT = 12609450213, KTG = 21787709, dan KTR = 8295483837.
+
+Galat Baku
+
+```{r}
+galat_baku <- sqrt(KTG)
+galat_baku
+```
+
+KORELASI
+
+```{r}
+r<-(sum(x1*y)-sum(x1)*sum(y)/n)/
+sqrt((sum(x1^2)-(sum(x1)^2/n))*(sum(y^2)-(sum(y)^2/n)))
+r
+```
+
+INTERPRETASI
+Diperoleh korelasi sebesar 0.811097 yang berarti nilai kekuatan hubungan antara kecepatan kuda terhadap harga mobil menunjukkan korelasi yang positif kuat yang sangat baik untuk menjelaskan hubungan antara x dan y. Jadi, semakin meningkatnya kecepatan kuda maka harga mobil akan semakin meningkat.
+
+Koefisien Determminasi
+
+```{r}
+Koef_det<-r^2
+Koef_det
+```
+
+INTERPRETASI
+Diperoleh koefisien determinasi sebesar 0.6578783 menunjukkan model regresi yang baik dalam menggambarkan hubungan antara variabel x dan y, mengingat tingkat koefisien determinasi yang paling baik adalah 1.  
+
+ADJUSTED R SQUARE
+
+```{r}
+Adj_R2<-1-((1-Koef_det)*(n-1)/(n-1-1))
+Adj_R2
+```
+
+INTERPRETASI
+Berdasarkan perhitungan diperoleh R2 = 0.6561504 yakni sekitar 65% yang menunjukkan besar ukuran kecepatan kuda (x) dapat menjelaskan variabel harga mobil (y), ini berarti sekitar 65% dari variasi dalam harga mobil dapat dijelaskan oleh kecepatan kuda pada model regresi. 
+
+UJI HIPOTESIS B0
+
+```{r}
+(KTG <- anova.model$'Mean Sq'[2])
+```
+
+```{r}
+(se_b0 <- sqrt(KTG*(1/n+mean(x1)^2/sum((x1-mean(x1))^2))))
+```
+
+```{r}
+(t_b0 <- b0/se_b0)
+```
+
+PENJELASAN UJI HIPOTESIS B0
+𝐻0: 𝛽0 = 0 (Semua harga mobil dapat dijelaskan oleh kecepatan kuda)
+𝐻1: 𝛽0 ≠ 0 (Ada harga mobil yang tidak dapat dijelaskan oleh kecepatan kuda)
+t_tabel = 1,972017478
+Karena nilai t0 = -4.713417 < t tabel = 1,972017478, maka tak tolak H0 artinya tidak terdapat cukup bukti untuk menyatakan bahwa ada harga mobil yang tidak dapat dijelaskan oleh kecepatan kuda pada taraf nyata 5%.
+
+UJI HIPOTESIS B1
+
+```{r}
+(se_b1 <- sqrt(KTG/sum((x1-mean(x1))^2)))
+```
+
+```{r}
+(t_b1 <- b1/se_b1)
+```
+
+PENJELASAN UJI HIPOTESIS B1
+H0: 𝛽1 = 0 (Tidak ada hubungan linier antara kecepatan kuda dan harga mobil)
+H1: 𝛽1 ≠ 0 (Ada hubungan linier antara kecepatan kuda dan harga mobil)
+t_tabel = 1,972017478
+Karena nilai t1 = 19.5126 > t tabel = 1,972017478, maka tolak H0 artinya ada hubungan linear antara kecepatan kuda dan harga mobil. Terdapat cukup bukti untuk menyatakan bahwa kecepatan kuda memengaruhi harga mobil pada taraf nyata 5%.
+
+
+PENDUGA SELANG KEPERCAYAAN 95% BAGI B1
+```{r}
+#batas bawah b1
+(bb.b1 <- b1 - abs(qt(0.025, df=n-2))*se_b1)
+```
+
+```{r}
+#batas atas b1
+(ba.b1 <- b1 + abs(qt(0.025, df=n-2))*se_b1)
+```
+Pada tingkat kepercayaan 95% dapat dinyatakan parameter b1 berada dalam selang 154.9015 hingga 189.7314.
+
+PENDUGA SELANG KEPERCAYAAN 95% BAGI B0
+```{r}
+#batas bawah b0
+
+(bb.b0 <- b0 - abs(qt(0.025, df=n-2))*se_b0)
+```
+```{r}
+#batas atas b0
+(ba.b0 <- b0 + abs(qt(0.025, df=n-2))*se_b0)
+```
+Pada tingkat kepercayaan 95% dapat dinyatakan parameter b0 berada dalam selang -6486.778 hingga -2659.939.
+
+SELANG KEPERCAYAAN RATAAN AMATAN
+
+```{r}
+amatan.diduga <- data.frame(x1=4,1)
+predict(model, amatan.diduga, interval = "confidence")
+```
+Berdasarkan hasil perhitungan diperoleh dugaan rataan Y ketika nilai x1=4,1 adalah -3884.093 dan dalam taraf kepercayaan 95% diyakini bahwa nilai dugaan rataan Y ketika x=4,1 ada dalam selang -5732.158 hingga -2036.027.
+
+SELANG KEPERCAYAAN INDIVIDU AMATAN
+
+```{r}
+predict(model, amatan.diduga, interval = "prediction")
+```
+Berdasarkan hasil perhitungan diperoleh nilai individu Y ketika nilai x1=4,1 adalah -3884.093 dan dalam taraf kepercayaan 95% diyakini bahwa nilai amatan individu Y ketika x=4,1 ada dalam selang -13272.63 hingga 5504.44.
